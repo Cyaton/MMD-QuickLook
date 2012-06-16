@@ -122,13 +122,13 @@ NSData* processMMD(NSURL* url)
     
     NSString *theData = [NSString stringWithContentsOfFile:[url path] usedEncoding:&encoding error:nil];
     
-	// Force generation of fully-formed (X)HTML document. MMD will add 
-	// a head element with a character encoding declaration
+	// Set HTML base url to path of file so that relative links/images work.
 	NSString *existingMetadata = [theData substringToIndex:[theData rangeOfString:@"\n"].location];
+    NSString *baseURL = [NSString stringWithFormat:@"HTML header: <base href=\"file://%@\"/>\n", [url path]];
 	if ([existingMetadata rangeOfString:@":"].length == 0) {
-		NSString *formatComplete = @"format:complete\n\n";
-		theData = [formatComplete stringByAppendingString:theData];
+		baseURL = [baseURL stringByAppendingString:@"\n"];
 	}
+    theData = [baseURL stringByAppendingString:theData];
 
     if (logDebug)
         NSLog(@"Used %lu encoding",(unsigned long) encoding);
